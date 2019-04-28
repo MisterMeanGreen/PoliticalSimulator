@@ -36,7 +36,7 @@ public:
 		appeal = p_app;
 		command = p_comm;
 	}
-	vector<string> negative_traits; //Defines traits that it cannot be in conjunction with
+	vector<string> negative_traits; //Defines traits that the current trait cannot be in conjunction with
 	effect() {
 		name = "NULL";
 		description = "NULL";
@@ -316,16 +316,15 @@ public:
 			}
 		generate_random_traits();
 	} //Generate Random Traits and Stats
-	static void load_player_files() {
+	static void load_player_files() { //Loads traits file, names for both females and males, and the last names
 		ifstream file("traits.txt");
 		string currently_parsed;
-		effect temp_trait;
-		while (!file.eof()) {
+		while (!file.eof()) { //Load traits
 			::traits.push_back(person::load_trait(file));
 			file.get();
 		}
 		file.close();
-		file.open("male_names.txt", fstream::in);
+		file.open("male_names.txt", fstream::in); //Load names
 		while (file.peek() != EOF) {
 			getline(file, currently_parsed);
 			m_names.push_back(currently_parsed);
@@ -438,4 +437,132 @@ std::ostream &operator<<(std::ostream &os, effect const &m) {
 	return os << "Name : " << m.name << "\nDesc : " << m.description << "\nDiplomacy : " << m.diplomacy << "\nIntrigue : " << m.intrigue << "\nAppeal : " << m.appeal << "\nCommand : " << m.command;
 }
 
+class Map {
+	struct coord { int x; int y; };
+private:
+	class state {
+		//vector< coord > pixels TODO;
 
+	public:
+		int population;
+		int income;
+		vector<string> neighbors;
+		int clique_id; //current clique id controlling it
+		string name; //name of state
+		state(int p_id, string p_name){
+			clique_id = p_id;
+			name = p_name;
+		}
+		state(int p_id) {
+			clique_id = p_id;
+		}
+		~state() {}
+		const auto& get_neighbors() {
+			return neighbors;
+		}
+	};
+
+
+public:
+	wstring display;
+	vector<state> states;
+	state load_state(ifstream& file,char& lst_chr) {
+		char last_char;
+		auto load_string = [&]()->string { //Locates and reads in everything between quotes
+			string text;
+			while (!file.eof())
+				if ((text += file.get()).at(text.size() - 1) == '"')
+					goto found_beg_quote;
+			throw "ERROR : Start of string not found when reading \"" + text + "\".";
+		found_beg_quote:
+			text = "";
+			while (!file.eof())
+				if ((text += file.get()).at(text.size() - 1) == '"')
+					goto found_end_quote;
+			throw "ERROR : End of string not found when reading \"" + text + "\".";
+		found_end_quote:
+			return text.substr(0, text.size() - 1);
+		};
+		auto load_until_lchar = [&](string chars)->string {
+			string text;
+			while (!file.eof()) {
+				text += file.get();
+				for (auto c : chars)
+					if (text.at(text.size() - 1) == c)
+						goto found_char;
+			}
+			throw "ERROR : Ending characters (" + chars + ") not found when reading \"" + text + "\".";
+		found_char:
+			last_char = text.at(text.size() - 1);
+			return text.substr(0, text.size() - 1);
+		};
+		string text; //current text read
+		state temp_state(0);
+		try {//Loading in name
+			text = load_string();
+			temp_state.name = text;
+		}
+		catch (string err) {
+			throw "ERROR : Failed to load state\n" + err + "\n" + text;
+		}
+		try {//Loading neighbors
+			load_until_lchar("-");
+			do {
+				temp_state.neighbors.push_back(load_string());
+				load_until_lchar(",-}");
+			} while (last_char != '-' && last_char != '}');
+		}
+		catch (string err) {
+			throw "ERROR : Failed to find neighbors when loading state : " + temp_state.name + "\n" + err;
+		}
+		lst_chr = last_char;
+		return temp_state;
+	}
+	void load_map_files() { //Loads in the map_display and the states information within the map
+		ifstream map_file("USA.txt");
+		char last_char; //Last character found
+		auto load_until_lchar = [&](string chars)->string {
+			string text;
+			while (!map_file.eof()) {
+				text += map_file.get();
+				for (auto c : chars)
+					if (text.at(text.size() - 1) == c)
+						goto found_char;
+			}
+			throw "ERROR : Ending characters (" + chars + ") not found when reading \"" + text + "\".";
+		found_char:
+			last_char = text.at(text.size() - 1);
+			return text.substr(0, text.size() - 1);
+		};
+		auto wload_until_lchar = [&](wstring chars)->wstring {
+			wstring text;
+			while (!map_file.eof()) {
+				char bit1 = map_file.get();
+				char bit2 = map_file.get();
+				text += ((bit2 << 8) | (bit1 & 0xff));
+				for (auto c : chars)
+					if (text.at(text.size() - 1) == c)
+						goto found_char;
+			}
+			throw "ERROR : UNICODE ERROR";
+		found_char:
+			last_char = text.at(text.size() - 1);
+			return text.substr(0, text.size() - 1);
+		};
+		try {
+			wload_until_lchar(L"M");
+			wload_until_lchar(L"{");
+			display = wload_until_lchar(L"}");
+		}
+		catch (string exp) {
+			throw "ERROR : Failed to read display for map_file\n" + exp;
+		}
+		map_file.close();
+		map_file.open("USA_states.txt");
+		load_until_lchar("D");
+		load_until_lchar("{");
+		while (last_char != '}') {
+			states.push_back(load_state(map_file,last_char));
+		}
+	}
+};

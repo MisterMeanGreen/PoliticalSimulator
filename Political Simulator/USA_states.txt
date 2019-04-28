@@ -1,0 +1,48 @@
+D{"Washington"-"Oregon","Idaho"-
+"Idaho"-"Oregon","Washington","North Nevada","Western Montana","Wyoming","Upper Utah"-
+"Oregon"-"Washington","Idaho","North Nevada","Northern California"-
+"Northern California"-"Southern California","North Nevada","South Nevada","Washington"-
+"Southern California"-"Northern California","Southern Nevada","Arizona"-
+"North Nevada"-"Southern Nevada","Idaho","Washington","Northern California","Upper Utah"-
+"Southern Nevada"-"North Nevada","Lower Utah","Southern California","Arizona"-
+"Arizona"-"Southern Nevada","Southern California","Lower Utah","Upper Utah","New Mexico"-
+"Lower Utah"-"Upper Utah","Southern Nevada","Arizona"-
+"Upper Utah"-"Lower Utah","Wyoming","Idaho","Arizona","Colorado"-
+"Wyoming"-"Upper Utah","Idaho","Western Montana","Eastern Montana","South Dakota","Nebraska","Colorado"-
+"Colorado"-"Upper Utah","New Mexico","New Mexico","Oklahoma","Kansas","Nebraska"-
+"New Mexico"-"Arizona","Southern Texas","Colorado","Oklahoma","North Texas"-
+"Western Montana"-"Eastern Montana","Idaho","Wyoming"-
+"Eastern Montana"-"Western Montana","Wyoming","South Dakota","North Dakota"-
+"North Dakota"-"South Dakota","Minnesota","Eastern Montana"-
+"South Dakota"-"North Dakota","Nebraska","Minnesota","Eastern Montana","Colorado","Iowa"-
+"Nebraska"-"Colorado","Kansas","Iowa","Missouri","Oklahoma","South Dakota"-
+"Kansas"-"Nebraska","Colorado","Oklahoma","Missouri"-
+"Oklahoma"-"New Mexico","Colorado","Kansas","North Texas","Eastern Texas","Arkansas","Missouri"-
+"North Texas"-"Eastern Texas","Southern Texas","Oklahoma","New Mexico"-
+"Southern Texas"-"North Texas","Eastern Texas","New Mexico"-
+"Eastern Texas"-"Louisiana","Southern Texas","Northern Texas","Oklahoma","Arkansas"
+"Louisiana"-"Arkansas","Eastern Texas","Mississippi"-
+"Arkansas"-"Eastern Texas","Oklahoma","Missouri","Tennessee","Mississippi"-
+"Missouri"-"Oklahoma","Kansas","Nebraska","Iowa","Illinois","Kentucky","Tennessee"-
+"Iowa"-"Nebraska","South Dakota","Minnesota","Wiscosin","Illinois","Missouri"-
+"Minnesota"-"North Dakota","South Dakota","Wiscosin","Iowa"-
+"Wisconsin"-"Minnesota","Iowa","Michigan","Illinois",-
+"Michigan"-"Wisconsin","Indiana","Ohio",-
+"Illinois"-"Wisconsin","Iowa","Missouri","Kentucky","Indiana"-
+"Indiana"-"Illinois","Kentucky","Ohio","Michigan"-
+"Ohio"-"Indiana","Michigan","Kentucky","West Virginia","Pennsylvania"-
+"Kentucky"-"Missouri","Tennessee","Illinois","Indiana","Ohio","West Virginia","Virginia"-
+"Tennessee"-"Missouri","Arkansas","Mississippi","Alabama","Georgia","North Carolina","Kentucky","Virginia"-
+"Mississippi"-"Alabama","Louisiana","Tennessee","Arkansas"-
+"Alabama"-"Mississippi","Tennessee","Georgia","North Florida"-
+"Georgia"-"South Carolina","North Florida","North Carolina","Tennessee"-
+"North Florida"-"South Florida","Alabama","Georgia"-
+"South Florida"-"North Florida"-
+"South Carolina"-"Georgia","North Carolina"-
+"North Carolina"-"South Carolina","Tennessee","Virginia"-
+"Virginia"-"Washington D.C","North Carolina","Kentucky","West Virginia","Pennsylvania"-
+"Pennsylvana","Virginia","West Virginia","New Jersey"-
+"Washington D.C"-"New Jersey","Virginia"-
+"New Jersey"-"Pennsylvania","New York"-
+"New York"-"Pennsylvania","New Jersey","Maine"-
+"Maine"-"New York"}
