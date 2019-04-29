@@ -20,13 +20,13 @@ enum pol_stat_ids {
 };
 class effect { //Used as traits
 public:
-	std::string name;
-	std::string description;
+	std::wstring name;
+	std::wstring description;
 	int diplomacy; //Ability for Person to work with other Politicians
 	int intrigue; //Ability for Person to conduct spying and espioange
 	int appeal; //Ability for person to appeal to the people
 	int command; //Ability for Person to control others
-	effect(std::string p_name, std::string p_desc, int p_diplo, int p_int, int p_app, int p_comm) {
+	effect(std::wstring p_name, std::wstring p_desc, int p_diplo, int p_int, int p_app, int p_comm) {
 		name = p_name;
 		description = p_desc;
 		diplomacy = p_diplo;
@@ -34,10 +34,10 @@ public:
 		appeal = p_app;
 		command = p_comm;
 	}
-	std::vector<std::string> negative_traits; //Defines traits that the current trait cannot be in conjunction with
+	std::vector<std::wstring> negative_traits; //Defines traits that the current trait cannot be in conjunction with
 	effect() {
-		name = "NULL";
-		description = "NULL";
+		name = L"NULL";
+		description = L"NULL";
 		diplomacy = 0;
 		intrigue = 0;
 		appeal = 0;
@@ -50,7 +50,7 @@ public:
 	bool operator!=(effect x) {
 		return name != x.name;
 	}
-	bool contains_ntrait(std::string s) {
+	bool contains_ntrait(std::wstring s) {
 		for (auto x : negative_traits)
 			if (x == s)
 				return true;
@@ -58,12 +58,12 @@ public:
 	}
 };
 std::vector<effect> traits;
-std::vector<std::string> m_names;
-std::vector<std::string> f_names;
-std::vector<std::string> l_names;
+std::vector<std::wstring> m_names;
+std::vector<std::wstring> f_names;
+std::vector<std::wstring> l_names;
 class person {
-	std::string first_name; //Usually Random
-	std::string last_name; //Dynastys!
+	std::wstring first_name; //Usually Random
+	std::wstring last_name; //Dynastys!
 	uint32_t age; //Age
 	bool gender; //Gender
 	int money; //Moolah
@@ -86,7 +86,7 @@ public:
 		}
 		else return false;
 	}
-	bool remove_trait(std::string name) { //Remove trait via name
+	bool remove_trait(std::wstring name) { //Remove trait via name
 		auto trait_itt = traits.begin();
 		uint16_t trait_num = 0;
 		while (trait_itt->name != name && trait_num < (traits.size() - 1)) {
@@ -175,17 +175,17 @@ public:
 		}
 		return -1;
 	}
-	std::string get_first_name() { return first_name; }
-	std::string get_last_name() { return last_name; }
-	std::string get_name() { return get_first_name() + ' ' + get_last_name(); }
+	std::wstring get_first_name() { return first_name; }
+	std::wstring get_last_name() { return last_name; }
+	std::wstring get_name() { return get_first_name() + L' ' + get_last_name(); }
 	int add_money(int amount) { return money += amount; }
 	int get_money() { return money; }
 	int get_age() { return age; }
 	uint32_t get_id() { return id; }
-	std::string get_gender() { return (gender == pol_genders::Male ? "male" : "female"); }
+	std::wstring get_gender() { return (gender == pol_genders::Male ? L"male" : L"female"); }
 	auto& operator[](uint32_t c) { return traits[c]; }
 	auto& trait_list() { return traits; }
-	person(std::string p_first_name, std::string p_last_name, uint32_t p_age, bool p_gender, int p_money, int p_diplomacy, int p_intrigue, int p_appeal, int p_command) : id(++pub_id) {
+	person(std::wstring p_first_name, std::wstring p_last_name, uint32_t p_age, bool p_gender, int p_money, int p_diplomacy, int p_intrigue, int p_appeal, int p_command) : id(++pub_id) {
 		first_name = p_first_name;
 		last_name = p_last_name;
 		age = p_age;
@@ -197,7 +197,7 @@ public:
 		command = p_command;
 		generate_random_traits();
 	} //Manual Stats
-	person(std::string p_first_name, std::string p_last_name, uint32_t p_age, bool p_gender, int p_money) : id(++pub_id) {
+	person(std::wstring p_first_name, std::wstring p_last_name, uint32_t p_age, bool p_gender, int p_money) : id(++pub_id) {
 		first_name = p_first_name;
 		last_name = p_last_name;
 		age = p_age;
@@ -223,78 +223,102 @@ public:
 		generate_random_traits();
 	} //Generate Random Traits and Stats
 	static void load_player_files() { //Loads traits file, names for both females and males, and the last names
-		std::ifstream file("traits.txt");
-		std::string currently_parsed;
-		while (file.peek() != EOF) { //Load traits
-			::traits.push_back(person::load_trait(file));
+		std::wifstream file(L"traits.txt");
+		std::wstring current_text;
+		wchar_t last_char;
+		auto load_until = [&](std::wstring chars) { return search_until(file, chars, last_char); };
+		auto load_string = [&]() { return load_quotes(file, last_char); };
+		try { //Attempt to load traits
+			load_until(L"T");
+			load_until(L"{");
+			while (last_char != L'}') { //Load traits
+				::traits.push_back(person::load_trait(file, last_char));
+			}
+		}
+		catch (std::wstring error_recieved) {
+			throw L"ERROR : Failed to load Traits file\n" + error_recieved;
 		}
 		file.close();
-		file.open("male_names.txt"); //Load names
-		while (file.peek() != EOF) {
-			std::getline(file, currently_parsed);
-			m_names.push_back(currently_parsed);
+		file.open("names.txt"); //Load names
+		try {
+			load_until(L"M");
+			load_until(L"{");
+			do {
+				m_names.push_back(load_until(L",}"));
+			} while (last_char != '}');
 		}
-		file.close();
-		file.open("female_names.txt");
-		while (file.peek() != EOF) {
-			std::getline(file, currently_parsed);
-			f_names.push_back(currently_parsed);
+		catch (std::wstring error_recieved) {
+			throw L"ERROR : Failed to load male names\n" + error_recieved;
 		}
-		file.close();
-		file.open("last_names.txt");
-		while (file.peek() != EOF) {
-			std::getline(file, currently_parsed);
-			l_names.push_back(currently_parsed);
+		try {
+			load_until(L"F");
+			load_until(L"{");
+			do {
+				f_names.push_back(load_until(L",}"));
+			} while (last_char != '}');
+		}
+		catch (std::wstring error_recieved) {
+			throw L"ERROR : Failed to load female names\n" + error_recieved;
+		}
+		try {
+			load_until(L"L");
+			load_until(L"{");
+			do {
+				l_names.push_back(load_until(L",}"));
+			} while (last_char != '}');
+		}
+		catch (std::wstring error_recieved) {
+			throw L"ERROR : Failed to load last names\n" + error_recieved;
 		}
 	}
-	static effect load_trait(std::ifstream& file) { //Loads trait from file
+	static effect load_trait(std::wifstream& file,wchar_t& last_char) { //Loads trait from file
 		effect temp_effect;
 		try {
-			std::string current_text; //Text currently read
-			char last_char;
-			auto load_until = [&](std::string chars) { return search_until(file, chars, last_char); };
+			std::wstring current_text; //Text currently read
+			auto load_until = [&](std::wstring chars) { return search_until(file, chars, last_char); };
 			auto load_string = [&]() { return load_quotes(file, last_char); };
 			temp_effect.name = load_string();
-			load_until(",");
+			load_until(L",");
 			temp_effect.description = load_string();
-			load_until(",");
+			load_until(L",");
 			try {
-				current_text = load_until(",");
+				current_text = load_until(L",");
 				temp_effect.diplomacy = stoi(current_text);
 			}
 			catch (...) {
-				throw "ERROR : Cannot Assign Diplomacy \"" + current_text + "\" could not be assigned.";
+				throw L"ERROR : Cannot Assign Diplomacy \"" + current_text + L"\" could not be assigned.";
 			}
 			try {
-				current_text = load_until(",");
+				current_text = load_until(L",");
 				temp_effect.intrigue = stoi(current_text);
 			}
 			catch (...) {
-				throw "ERROR : Cannot Assign Intrigue \"" + current_text + "\" could not be assigned.";
+				throw L"ERROR : Cannot Assign Intrigue \"" + current_text + L"\" could not be assigned.";
 			}
 			try {
-				current_text = load_until(",");
+				current_text = load_until(L",");
 				temp_effect.appeal = stoi(current_text);
 			}
 			catch (...) {
-				throw "ERROR : Cannot Assign Appeal \"" + current_text + "\" could not be assigned.";
+				throw L"ERROR : Cannot Assign Appeal \"" + current_text + L"\" could not be assigned.";
 			}
 			try {
-				current_text = load_until(",");
+				current_text = load_until(L",");
 				temp_effect.command = stoi(current_text);
 			}
 			catch (...) {
-				throw "ERROR : Cannot Assign Command \"" + current_text + "\" could not be assigned.";
+				throw L"ERROR : Cannot Assign Command \"" + current_text + L"\" could not be assigned.";
 			}
-			load_until("[");
+			load_until(L"[");
 			do {
 				current_text = load_string();
 				temp_effect.negative_traits.push_back(current_text);
-				load_until(",]");
+				load_until(L",]");
 			} while (last_char != ']');
+			load_until(L",}");
 		}
-		catch (std::string error_recieved) {
-			throw "Failed to load trait\n" + error_recieved + "\nName : " + temp_effect.name + "\nDesc : " + temp_effect.description + "\nDiplomacy : " + std::to_string(temp_effect.diplomacy) + "\nIntrigue : " + std::to_string(temp_effect.intrigue) + "\nAppeal : " + std::to_string(temp_effect.appeal) + "\nCommand : " + std::to_string(temp_effect.command);
+		catch (std::wstring error_recieved) {
+			throw L"Failed to load trait\n" + error_recieved + L"\nName : L" + temp_effect.name + L"\nDesc : L" + temp_effect.description + L"\nDiplomacy : L" + std::to_wstring(temp_effect.diplomacy) + L"\nIntrigue : L" + std::to_wstring(temp_effect.intrigue) + L"\nAppeal : L" + std::to_wstring(temp_effect.appeal) + L"\nCommand : L" + std::to_wstring(temp_effect.command);
 		}
 		return temp_effect;
 	}
@@ -307,10 +331,10 @@ private:
 	public:
 		int population;
 		int income;
-		std::vector<std::string> neighbors;
+		std::vector<std::wstring> neighbors;
 		int clique_id; //current clique id controlling it
-		std::string name; //name of state
-		state(int p_id, std::string p_name) {
+		std::wstring name; //name of state
+		state(int p_id, std::wstring p_name) {
 			clique_id = p_id;
 			name = p_name;
 		}
@@ -325,64 +349,47 @@ private:
 public:
 	std::wstring display;
 	std::vector<state> states;
-	state load_state(std::ifstream& file, char& lst_chr) { //Load a singular state
-		char last_char;
-		auto load_until = [&](std::string chars) { return search_until(file, chars, last_char); };
+	state load_state(std::wifstream& file, wchar_t& lst_chr) { //Load a singular state
+		wchar_t last_char;
+		auto load_until = [&](std::wstring chars) { return search_until(file, chars, last_char); };
 		auto load_string = [&]() { return load_quotes(file, last_char); };
-		std::string current_text; //current text read
+		std::wstring current_text; //current text read
 		state temp_state(0);
 		try {//Loading in name
 			current_text = load_string();
 			temp_state.name = current_text;
 		}
-		catch (std::string error_recieved) {
-			throw "ERROR : Failed to load state\n" + error_recieved + "\n" + current_text;
+		catch (std::wstring error_recieved) {
+			throw L"ERROR : Failed to load state\n" + error_recieved + L"\n" + current_text;
 		}
 		try {//Loading neighbors
-			load_until("-");
+			load_until(L"-");
 			do {
 				temp_state.neighbors.push_back(load_string());
-				load_until(",-}");
+				load_until(L",-}");
 			} while (last_char != '-' && last_char != '}');
 		}
-		catch (std::string error_recieved) {
-			throw "ERROR : Failed to find neighbors when loading state : " + error_recieved + "\n" + temp_state.name;
+		catch (std::wstring error_recieved) {
+			throw L"ERROR : Failed to find neighbors when loading state : L" + error_recieved + L"\n" + temp_state.name;
 		}
 		lst_chr = last_char;
 		return temp_state;
 	}
 	void load_map_files() { //Loads in the map_display and the states information within the map
-		std::ifstream map_file("USA.txt");
-		char last_char; //Last character found
-		auto load_until = [&](std::string chars) { return search_until(map_file, chars, last_char); };
+		std::wifstream map_file(L"USA.txt");
+		wchar_t last_char; //Last character found
+		auto load_until = [&](std::wstring chars) { return search_until(map_file, chars, last_char); };
 		auto load_string = [&]() { return load_quotes(map_file, last_char); };
-		auto wload_until_lchar = [&](std::wstring chars)->std::wstring {
-			std::wstring text;
-			while (!map_file.eof()) {
-				char bit1 = static_cast<char>(map_file.get());
-				char bit2 = static_cast<char>(map_file.get());
-				text += ((bit2 << 8) | (bit1 & 0xff));
-				for (auto c : chars)
-					if (text.back() == c)
-						goto found_char;
-			}
-			throw "ERROR : UNICODE ERROR IN READING MAP DISPLAY";
-		found_char:
-			last_char = static_cast<char>(text.back());
-			return text.substr(0, text.size() - 1);
-		};
 		try {
-			wload_until_lchar(L"M");
-			wload_until_lchar(L"{");
-			display = wload_until_lchar(L"}");
+			load_until(L"M");
+			load_until(L"{");
+			display = load_until(L"}");
 		}
-		catch (std::string exp) {
-			throw "ERROR : Failed to read display for map_file\n" + exp;
+		catch (std::wstring exp) {
+			throw L"ERROR : Failed to read display for map_file\n" + exp + L"\nData Read : " + display;
 		}
-		map_file.close();
-		map_file.open("USA_states.txt");
-		load_until("D");
-		load_until("{");
+		load_until(L"D");
+		load_until(L"{");
 		while (last_char != '}') {
 			states.push_back(load_state(map_file, last_char));
 		}
