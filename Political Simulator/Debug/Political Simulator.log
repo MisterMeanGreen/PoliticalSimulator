@@ -1,13 +1,2 @@
 ﻿  Political Simulator.cpp
-c:\users\nick\source\repos\political simulator\political simulator\standards.h(349): warning C4244: 'argument': conversion from 'int' to 'char', possible loss of data
-c:\users\nick\source\repos\political simulator\political simulator\standards.h(355): warning C4244: 'argument': conversion from 'int' to 'char', possible loss of data
-c:\users\nick\source\repos\political simulator\political simulator\standards.h(364): warning C4244: 'argument': conversion from 'int' to 'char', possible loss of data
-c:\users\nick\source\repos\political simulator\political simulator\standards.h(376): warning C4244: 'argument': conversion from 'int' to 'char', possible loss of data
-c:\users\nick\source\repos\political simulator\political simulator\standards.h(474): warning C4244: 'argument': conversion from 'int' to 'char', possible loss of data
-c:\users\nick\source\repos\political simulator\political simulator\standards.h(480): warning C4244: 'argument': conversion from 'int' to 'char', possible loss of data
-c:\users\nick\source\repos\political simulator\political simulator\standards.h(489): warning C4244: 'argument': conversion from 'int' to 'char', possible loss of data
-c:\users\nick\source\repos\political simulator\political simulator\standards.h(527): warning C4244: 'argument': conversion from 'int' to 'char', possible loss of data
-c:\users\nick\source\repos\political simulator\political simulator\standards.h(540): warning C4244: 'initializing': conversion from 'int' to 'char', possible loss of data
-c:\users\nick\source\repos\political simulator\political simulator\standards.h(541): warning C4244: 'initializing': conversion from 'int' to 'char', possible loss of data
-c:\users\nick\source\repos\political simulator\political simulator\standards.h(549): warning C4244: '=': conversion from 'wchar_t' to 'char', possible loss of data
   Political Simulator.vcxproj -> C:\Users\Nick\Source\repos\Political Simulator\Debug\Political Simulator.exe
