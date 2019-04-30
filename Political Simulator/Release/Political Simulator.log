@@ -1,5 +1,11 @@
-﻿  Political Simulator.cpp
+﻿  Helper.cpp
+  Political Simulator.cpp
+  Standards.cpp
+c:\users\nick\source\repos\political simulator\political simulator\standards.cpp(109): warning C4018: '<': signed/unsigned mismatch
+  Unicode.cpp
   Generating code
-  All 623 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  614 of 711 functions (86.4%) were compiled, the rest were copied from previous compilation.
+    185 functions were new in current compilation
+    23 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   Political Simulator.vcxproj -> C:\Users\Nick\Source\repos\Political Simulator\Release\Political Simulator.exe

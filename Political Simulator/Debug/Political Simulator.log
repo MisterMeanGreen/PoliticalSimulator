@@ -1,2 +1,6 @@
-﻿  Political Simulator.cpp
+﻿  Helper.cpp
+  Political Simulator.cpp
+  Standards.cpp
+c:\users\nick\source\repos\political simulator\political simulator\standards.cpp(109): warning C4018: '<': signed/unsigned mismatch
+  Generating Code...
   Political Simulator.vcxproj -> C:\Users\Nick\Source\repos\Political Simulator\Debug\Political Simulator.exe
