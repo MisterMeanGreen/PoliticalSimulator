@@ -5,6 +5,7 @@
 #include <utility>
 #include <fstream>
 #include <string>
+#include <iostream>
 #include <random>
 #include <algorithm>
 #include "Helper.h"
@@ -323,15 +324,18 @@ public:
 		return temp_effect;
 	}
 };
+std::wostream &operator<<(std::wostream& os, effect const &temp_effect) {
+	return os << L"\nName : L" + temp_effect.name << L"\nDesc : L" + temp_effect.description << L"\nDiplomacy : L" << std::to_wstring(temp_effect.diplomacy) << L"\nIntrigue : L" << std::to_wstring(temp_effect.intrigue) << L"\nAppeal : L" << std::to_wstring(temp_effect.appeal) << L"\nCommand : L" << std::to_wstring(temp_effect.command);
+}
 class Map {
 	struct coord { int x; int y; };
 private:
 	class state {
-		//std::vector< coord > pixels TODO;
 	public:
 		int population;
 		int income;
-		std::vector<std::wstring> neighbors;
+		std::vector<std::wstring> neighbors; //neighboring states
+		std::vector< coord > pixels; //pixels on console
 		int clique_id; //current clique id controlling it
 		std::wstring name; //name of state
 		state(int p_id, std::wstring p_name) {
@@ -346,11 +350,7 @@ private:
 			return neighbors;
 		}
 	};
-public:
-	std::wstring display;
-	std::vector<state> states;
-	state load_state(std::wifstream& file, wchar_t& lst_chr) { //Load a singular state
-		wchar_t last_char;
+	state load_state(std::wifstream& file, wchar_t& last_char) { //Load a singular state
 		auto load_until = [&](std::wstring chars) { return search_until(file, chars, last_char); };
 		auto load_string = [&]() { return load_quotes(file, last_char); };
 		std::wstring current_text; //current text read
@@ -366,15 +366,34 @@ public:
 			load_until(L"-");
 			do {
 				temp_state.neighbors.push_back(load_string());
-				load_until(L",-}");
-			} while (last_char != '-' && last_char != '}');
+				load_until(L",-");
+			} while (last_char != '-');
 		}
 		catch (std::wstring error_recieved) {
 			throw L"ERROR : Failed to find neighbors when loading state : L" + error_recieved + L"\n" + temp_state.name;
 		}
-		lst_chr = last_char;
+		try { //Loading Pixels
+			load_until(L"{");
+			do {
+				coord temp_coord;
+				current_text = load_until(L",");
+				temp_coord.x = stoi(current_text);
+				current_text = load_until(L",}");
+				temp_coord.y = stoi(current_text);
+				temp_state.pixels.push_back(temp_coord);
+			} while (last_char != '}');
+
+		}
+		catch (std::wstring error_recieved) {
+			throw L"ERROR : Failed to load pixels \n" + error_recieved;
+		}
+		load_until(L"-}");
 		return temp_state;
 	}
+
+public:
+	std::wstring display;
+	std::vector<state> states;
 	void load_map_files() { //Loads in the map_display and the states information within the map
 		std::wifstream map_file(L"USA.txt");
 		wchar_t last_char; //Last character found
@@ -393,5 +412,13 @@ public:
 		while (last_char != '}') {
 			states.push_back(load_state(map_file, last_char));
 		}
+	}
+	void render_state(std::wstring wstr,wchar_t chr) {
+		for(auto state : states) 
+			if(state.name == wstr)
+				for (auto pixel : state.pixels) {
+					set_pos((SHORT)pixel.x, (SHORT)pixel.y);
+					std::wcout << chr;
+				}
 	}
 };

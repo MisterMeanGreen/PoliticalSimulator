@@ -40,3 +40,12 @@ found_beg_quote:
 found_end_quote:
 	return text.substr(0, text.size() - 1);
 };
+#include <Windows.h>
+HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+auto set_color(WORD color) {
+	return SetConsoleTextAttribute(hConsole, color);
+}
+auto set_pos(SHORT x, SHORT y) {
+	return SetConsoleCursorPosition(hConsole, { x,y });
+}
